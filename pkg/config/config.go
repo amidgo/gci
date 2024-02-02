@@ -70,6 +70,7 @@ func (g YamlConfig) Parse() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	if sectionSeparators == nil {
 		sectionSeparators = section.DefaultSectionSeparators()
 	}

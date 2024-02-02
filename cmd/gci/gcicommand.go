@@ -25,6 +25,10 @@ func (e *Executor) newGciCommand(use, short, long string, aliases []string, stdI
 		Long:              long,
 		ValidArgsFunction: goFileCompletion,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if *debug {
+				log.SetLevel(zapcore.DebugLevel)
+			}
+
 			fmtCfg := config.BoolConfig{
 				NoInlineComments: *noInlineComments,
 				NoPrefixComments: *noPrefixComments,
@@ -42,9 +46,7 @@ func (e *Executor) newGciCommand(use, short, long string, aliases []string, stdI
 			if err != nil {
 				return err
 			}
-			if *debug {
-				log.SetLevel(zapcore.DebugLevel)
-			}
+
 			return processingFunc(args, *gciCfg)
 		},
 	}

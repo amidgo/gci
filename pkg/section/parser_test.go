@@ -73,6 +73,17 @@ func TestParse(t *testing.T) {
 			expectedSection: nil,
 			expectedError:   errors.New("invalid params: go module file not found"),
 		},
+		{
+			input: []string{"module_prefix(github.com)"},
+			expectedSection: SectionList{
+				ModulePrefix{Pkg: "github.com/hexops/gotextdiff"},
+				ModulePrefix{Pkg: "github.com/pmezard/go-difflib"},
+				ModulePrefix{Pkg: "github.com/spf13/cobra"},
+				ModulePrefix{Pkg: "github.com/stretchr/testify"},
+			},
+			expectedError: nil,
+			goModulePath:  "testdata/go.mod.test",
+		},
 	}
 	for _, test := range testCases {
 		parsedSection, err := Parse(test.input, test.goModulePath)

@@ -54,6 +54,16 @@ func Parse(data []string, goModulePath string) (SectionList, error) {
 			}
 
 			list = append(list, sections...)
+		} else if strings.HasPrefix(s, "module_prefix(") && len(s) > 15 {
+			sections, err := modulePrefixSections(goModulePath, s)
+			if err != nil {
+				errString.WriteRune(' ')
+				errString.WriteString(err.Error())
+
+				continue
+			}
+
+			list = append(list, sections...)
 		} else {
 			errString.WriteRune(' ')
 			errString.WriteString(s)
@@ -81,6 +91,32 @@ func moduleSections(goModulePath string) ([]Section, error) {
 		}
 
 		sections = append(sections, Module{Pkg: dep.Mod.Path})
+	}
+
+	return sections, nil
+}
+
+func modulePrefixSections(goModulePath string, s string) ([]Section, error) {
+	mdfile, err := modFile(goModulePath)
+	if err != nil {
+		return nil, err
+	}
+
+	prefix := strings.TrimPrefix(s, "module_prefix(")
+	prefix = strings.TrimSuffix(prefix, ")")
+
+	sections := make([]Section, 0)
+
+	for _, dep := range mdfile.Require {
+		if dep.Indirect {
+			continue
+		}
+
+		if !strings.HasPrefix(dep.Mod.Path, prefix) {
+			continue
+		}
+
+		sections = append(sections, ModulePrefix{Pkg: dep.Mod.Path})
 	}
 
 	return sections, nil

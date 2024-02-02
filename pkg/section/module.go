@@ -1,6 +1,7 @@
 package section
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/daixiang0/gci/pkg/parse"
@@ -16,7 +17,8 @@ type Module struct {
 func (d Module) MatchSpecificity(spec *parse.GciImports) specificity.MatchSpecificity {
 	path := strings.Trim(spec.Path, `"`)
 
-	if strings.HasPrefix(path, d.Pkg) {
+	if path != "" &&
+		strings.HasPrefix(path, d.Pkg) {
 		return specificity.Module{Length: len(d.Pkg)}
 	}
 
@@ -24,7 +26,7 @@ func (d Module) MatchSpecificity(spec *parse.GciImports) specificity.MatchSpecif
 }
 
 func (d Module) String() string {
-	return ModuleType
+	return fmt.Sprintf("module(%s)", d.Pkg)
 }
 
 func (d Module) Type() string {

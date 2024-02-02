@@ -8,8 +8,8 @@ import (
 
 func TestModule(t *testing.T) {
 	testCases := []specificityTestData{
-		{`"foo/pkg/bar"`, Module{""}, specificity.MisMatch{}},
 		{`"foo/pkg/bar"`, Module{"foo"}, specificity.Module{Length: 3}},
+		{`""`, Module{"foo"}, specificity.MisMatch{}},
 		{`"foo/pkg/bar"`, Module{"bar"}, specificity.MisMatch{}},
 		{`"foo/pkg/bar"`, Module{"github.com/foo/bar"}, specificity.MisMatch{}},
 		{`"foo/pkg/bar"`, Module{"github.com/foo"}, specificity.MisMatch{}},

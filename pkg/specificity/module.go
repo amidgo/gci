@@ -20,5 +20,5 @@ func (m Module) class() specificityClass {
 }
 
 func (m Module) String() string {
-	return fmt.Sprintf("Match(length: %d)", m.Length)
+	return fmt.Sprintf("Module(length: %d)", m.Length)
 }

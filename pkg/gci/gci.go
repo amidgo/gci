@@ -108,6 +108,8 @@ func ProcessFiles(fileGenerator io.FileGeneratorFunc, cfg config.Config, fileFun
 
 func processingFunc(file io.FileObj, cfg config.Config, formattingFunc fileFormattingFunc) func() error {
 	return func() error {
+		log.L().Debug(fmt.Sprintf("processingFunc config sections, %s", cfg.Sections))
+
 		unmodifiedFile, formattedFile, err := LoadFormatGoFile(file, cfg)
 		if err != nil {
 			// if errors.Is(err, FileParsingError{}) {
@@ -126,6 +128,8 @@ func LoadFormatGoFile(file io.FileObj, cfg config.Config) (src, dist []byte, err
 	if err != nil {
 		return nil, nil, err
 	}
+
+	log.L().Debug(fmt.Sprintf("LoadFormatGoFile config sections, %s", cfg.Sections))
 
 	return LoadFormat(src, file.Path(), cfg)
 }
@@ -159,8 +163,12 @@ func LoadFormat(in []byte, path string, cfg config.Config) (src, dist []byte, er
 
 	var body []byte
 
+	log.L().Debug(fmt.Sprintf("LoadFormat config sections, %s", cfg.Sections))
 	// order by section list
 	for _, s := range cfg.Sections {
+
+		log.L().Debug(fmt.Sprintf("section: %s", s))
+
 		if len(result[s.String()]) > 0 {
 			if len(body) > 0 {
 				body = append(body, utils.Linebreak)
