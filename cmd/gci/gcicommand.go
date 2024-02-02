@@ -70,7 +70,7 @@ alias - alias section, contains all alias imports.`
 
 	customOrder = cmd.Flags().Bool("custom-order", false, "Enable custom order of sections")
 	sectionStrings = cmd.Flags().StringArrayP("section", "s", section.DefaultSections().String(), sectionHelp)
-	modulePath = cmd.Flags().String("module-path", "go.mod", "Path to go module file")
+	modulePath = cmd.Flags().String("module-path", "", "Path to go module file")
 
 	// deprecated
 	noInlineComments = cmd.Flags().Bool("NoInlineComments", false, "Drops inline comments while formatting")

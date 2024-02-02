@@ -43,7 +43,9 @@ type YamlConfig struct {
 func (g YamlConfig) Parse() (*Config, error) {
 	var err error
 
-	sections, err := section.Parse(g.SectionStrings, g.ModulePath)
+	modulePath := g.modulePath()
+
+	sections, err := section.Parse(g.SectionStrings, modulePath)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +66,7 @@ func (g YamlConfig) Parse() (*Config, error) {
 		})
 	}
 
-	sectionSeparators, err := section.Parse(g.SectionSeparatorStrings, g.ModulePath)
+	sectionSeparators, err := section.Parse(g.SectionSeparatorStrings, modulePath)
 	if err != nil {
 		return nil, err
 	}
@@ -73,6 +75,14 @@ func (g YamlConfig) Parse() (*Config, error) {
 	}
 
 	return &Config{g.Cfg, sections, sectionSeparators}, nil
+}
+
+func (g *YamlConfig) modulePath() string {
+	if g.ModulePath == "" {
+		return "go.mod"
+	}
+
+	return g.ModulePath
 }
 
 func ParseConfig(in string) (*Config, error) {
