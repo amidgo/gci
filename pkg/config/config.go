@@ -37,15 +37,17 @@ type YamlConfig struct {
 	Cfg                     BoolConfig `yaml:",inline"`
 	SectionStrings          []string   `yaml:"sections"`
 	SectionSeparatorStrings []string   `yaml:"sectionseparators"`
+	ModulePath              string     `yaml:"modulePath"`
 }
 
 func (g YamlConfig) Parse() (*Config, error) {
 	var err error
 
-	sections, err := section.Parse(g.SectionStrings)
+	sections, err := section.Parse(g.SectionStrings, g.ModulePath)
 	if err != nil {
 		return nil, err
 	}
+
 	if sections == nil {
 		sections = section.DefaultSections()
 	}
@@ -62,7 +64,7 @@ func (g YamlConfig) Parse() (*Config, error) {
 		})
 	}
 
-	sectionSeparators, err := section.Parse(g.SectionSeparatorStrings)
+	sectionSeparators, err := section.Parse(g.SectionSeparatorStrings, g.ModulePath)
 	if err != nil {
 		return nil, err
 	}

@@ -12,8 +12,12 @@ import (
 type processingFunc = func(args []string, gciCfg config.Config) error
 
 func (e *Executor) newGciCommand(use, short, long string, aliases []string, stdInSupport bool, processingFunc processingFunc) *cobra.Command {
-	var noInlineComments, noPrefixComments, skipGenerated, skipVendor, customOrder, debug *bool
-	var sectionStrings, sectionSeparatorStrings *[]string
+	var (
+		noInlineComments, noPrefixComments, skipGenerated, skipVendor, customOrder, debug *bool
+		sectionStrings, sectionSeparatorStrings                                           *[]string
+		modulePath                                                                        *string
+	)
+
 	cmd := cobra.Command{
 		Use:               use,
 		Aliases:           aliases,
@@ -29,7 +33,12 @@ func (e *Executor) newGciCommand(use, short, long string, aliases []string, stdI
 				SkipVendor:       *skipVendor,
 				CustomOrder:      *customOrder,
 			}
-			gciCfg, err := config.YamlConfig{Cfg: fmtCfg, SectionStrings: *sectionStrings, SectionSeparatorStrings: *sectionSeparatorStrings}.Parse()
+			gciCfg, err := config.YamlConfig{
+				Cfg:                     fmtCfg,
+				SectionStrings:          *sectionStrings,
+				SectionSeparatorStrings: *sectionSeparatorStrings,
+				ModulePath:              *modulePath,
+			}.Parse()
 			if err != nil {
 				return err
 			}
@@ -61,6 +70,7 @@ alias - alias section, contains all alias imports.`
 
 	customOrder = cmd.Flags().Bool("custom-order", false, "Enable custom order of sections")
 	sectionStrings = cmd.Flags().StringArrayP("section", "s", section.DefaultSections().String(), sectionHelp)
+	modulePath = cmd.Flags().String("module-path", "go.mod", "Path to go module file")
 
 	// deprecated
 	noInlineComments = cmd.Flags().Bool("NoInlineComments", false, "Drops inline comments while formatting")

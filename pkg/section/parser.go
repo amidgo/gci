@@ -3,16 +3,25 @@ package section
 import (
 	"errors"
 	"fmt"
+	"os"
 	"strings"
+
+	"golang.org/x/mod/modfile"
 )
 
-func Parse(data []string) (SectionList, error) {
+var (
+	ErrGoModFileNotFound    = errors.New("go module file not found")
+	ErrFailedParseGoModFile = errors.New("failed parse go.mod file, wrong format")
+)
+
+func Parse(data []string, goModulePath string) (SectionList, error) {
 	if len(data) == 0 {
 		return nil, nil
 	}
 
-	var list SectionList
-	var errString string
+	list := make(SectionList, 0, len(data))
+
+	errString := strings.Builder{}
 	for _, d := range data {
 		s := strings.ToLower(d)
 		if len(s) == 0 {
@@ -35,12 +44,58 @@ func Parse(data []string) (SectionList, error) {
 			list = append(list, Blank{})
 		} else if s == "alias" {
 			list = append(list, Alias{})
+		} else if s == "module" {
+			sections, err := moduleSections(goModulePath)
+			if err != nil {
+				errString.WriteRune(' ')
+				errString.WriteString(err.Error())
+
+				continue
+			}
+
+			list = append(list, sections...)
 		} else {
-			errString += fmt.Sprintf(" %s", s)
+			errString.WriteRune(' ')
+			errString.WriteString(s)
 		}
 	}
-	if errString != "" {
-		return nil, errors.New(fmt.Sprintf("invalid params:%s", errString))
+
+	if errString.String() != "" {
+		return nil, fmt.Errorf("invalid params:%s", errString.String())
 	}
+
 	return list, nil
+}
+
+func moduleSections(goModulePath string) ([]Section, error) {
+	mdfile, err := modFile(goModulePath)
+	if err != nil {
+		return nil, err
+	}
+
+	sections := make([]Section, 0)
+
+	for _, dep := range mdfile.Require {
+		if dep.Indirect {
+			continue
+		}
+
+		sections = append(sections, Module{Pkg: dep.Mod.Path})
+	}
+
+	return sections, nil
+}
+
+func modFile(goModulePath string) (*modfile.File, error) {
+	goModFileContent, err := os.ReadFile(goModulePath)
+	if err != nil {
+		return nil, ErrGoModFileNotFound
+	}
+
+	modFile, err := modfile.Parse(goModulePath, goModFileContent, nil)
+	if err != nil {
+		return nil, ErrFailedParseGoModFile
+	}
+
+	return modFile, nil
 }
