@@ -65,7 +65,10 @@ Prefix(github.com/daixiang0) - custom section, groups all imports with the speci
 default - default section, contains all rest imports
 blank - blank section, contains all blank imports.
 dot - dot section, contains all dot imports.
-alias - alias section, contains all alias imports.`
+alias - alias section, contains all alias imports.
+module - module section, parse imports from go.mod file sorting and insert line
+module_prefix(github.com/amidgo) - same the module section but override sorting order with specific go.mod import
+`
 
 	skipGenerated = cmd.Flags().Bool("skip-generated", false, "Skip generated files")
 	skipVendor = cmd.Flags().Bool("skip-vendor", false, "Skip files inside vendor directory")
