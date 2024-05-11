@@ -1,11 +1,10 @@
 package section
 
-// Code generated based on go1.21.0 X:arenas. DO NOT EDIT.
+// Code generated based on go1.22.0. DO NOT EDIT.
 
 var standardPackages = map[string]struct{}{
 	"archive/tar":          {},
 	"archive/zip":          {},
-	"arena":                {},
 	"bufio":                {},
 	"bytes":                {},
 	"cmp":                  {},
@@ -78,6 +77,7 @@ var standardPackages = map[string]struct{}{
 	"go/scanner":           {},
 	"go/token":             {},
 	"go/types":             {},
+	"go/version":           {},
 	"hash":                 {},
 	"hash/adler32":         {},
 	"hash/crc32":           {},
@@ -106,6 +106,7 @@ var standardPackages = map[string]struct{}{
 	"math/bits":            {},
 	"math/cmplx":           {},
 	"math/rand":            {},
+	"math/rand/v2":         {},
 	"mime":                 {},
 	"mime/multipart":       {},
 	"mime/quotedprintable": {},
